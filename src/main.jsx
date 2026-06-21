@@ -331,10 +331,13 @@ function App() {
 
   const goTo = (index) => {
     const root = deckRef.current;
-    const target = root?.children?.[index];
-    target?.scrollIntoView({ behavior: "smooth", block: "start" });
-    setActive(index);
-    track("slide_navigated", { index, slideId: slides[index]?.id });
+    if (!root) return;
+    const nextIndex = Math.max(0, Math.min(index, slides.length - 1));
+    const target = root.children?.[nextIndex];
+    if (!target) return;
+    root.scrollTo({ top: target.offsetTop - root.offsetTop, behavior: "smooth" });
+    setActive(nextIndex);
+    track("slide_navigated", { index: nextIndex, slideId: slides[nextIndex]?.id });
   };
 
   const goToSlide = (slideId) => {
