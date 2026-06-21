@@ -11,6 +11,11 @@
   --lemon: #f3e8b6;
   --coral: #d98d74;
   --sky: #dbe8ed;
+  --rose: #f2d8d1;
+  --sage: #d7ead5;
+  --blue: #d9e8f0;
+  --accent: var(--coral);
+  --accent-soft: rgba(217, 141, 116, 0.18);
   --radius: 10px;
   --shadow: 0 24px 70px rgba(45, 37, 29, 0.12);
   color: var(--ink);
@@ -26,7 +31,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-width: 320px;
-  overflow: hidden;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 8% 0%, rgba(255, 255, 255, 0.64), transparent 34%),
     linear-gradient(180deg, var(--paper), #fbf0df);
@@ -109,14 +114,14 @@ a { color: inherit; text-decoration: none; }
 .primary-button {
   background: transparent;
   border-bottom: 1px solid currentColor;
-  color: var(--ink);
+  color: #8f3e2b;
   box-shadow: none;
   width: fit-content;
 }
 
 .secondary-button {
   border-bottom: 1px solid rgba(45, 37, 29, 0.35);
-  color: var(--muted);
+  color: #426f55;
 }
 
 .quiet-button {
@@ -139,41 +144,61 @@ a { color: inherit; text-decoration: none; }
 
 .deck {
   display: block;
-  height: 100svh;
   margin: 0 auto;
-  max-height: 100svh;
   max-width: none;
-  overflow: hidden;
+  overflow: visible;
   overscroll-behavior: none;
   padding: 0;
-  scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
 }
 
 .slide {
   align-items: start;
   align-content: start;
-  background: transparent;
+  background:
+    radial-gradient(circle at 94% 12%, var(--accent-soft), transparent 30%),
+    radial-gradient(circle at 4% 92%, rgba(255, 255, 255, 0.62), transparent 28%),
+    transparent;
   border: 0;
   border-bottom: 1px solid rgba(45, 37, 29, 0.08);
   border-radius: 0;
-  display: grid;
+  display: none;
   gap: clamp(28px, 5vw, 64px);
   grid-template-columns: minmax(0, 1fr);
   justify-content: center;
   margin: 0;
-  height: 100svh;
-  min-height: 100svh;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  min-height: 100dvh;
+  overflow: visible;
   padding: clamp(28px, 5vw, 56px) max(22px, calc((100vw - 900px) / 2));
-  scroll-margin-top: 0;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   box-shadow: none;
   position: relative;
-  touch-action: pan-y;
+}
+
+.slide.active {
+  display: grid;
+}
+
+.hello {
+  --accent-soft: rgba(217, 141, 116, 0.18);
+}
+
+.credibility,
+.what-happens {
+  --accent-soft: rgba(215, 234, 213, 0.56);
+}
+
+.why-now,
+.survey {
+  --accent-soft: rgba(217, 232, 240, 0.62);
+}
+
+.identity,
+.ask {
+  --accent-soft: rgba(242, 216, 209, 0.58);
+}
+
+.pricing,
+.share {
+  --accent-soft: rgba(243, 232, 182, 0.56);
 }
 
 .slide-copy {
@@ -283,7 +308,9 @@ p { margin: 0; }
 }
 
 .photo-card, .form-card, .survey-card, .final-card, .share-card {
-  background: rgba(255, 250, 242, 0.54);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 250, 242, 0.5)),
+    var(--accent-soft);
   border: 1px solid rgba(45, 37, 29, 0.14);
   border-radius: 0;
   box-shadow: none;
@@ -411,7 +438,7 @@ input, textarea {
 }
 
 input:focus, textarea:focus, .choices button:focus {
-  box-shadow: 0 0 0 4px rgba(255, 182, 162, 0.35);
+  box-shadow: 0 0 0 4px rgba(217, 141, 116, 0.24);
   outline: 2px solid var(--line);
   outline-offset: 2px;
 }
@@ -454,7 +481,7 @@ input:focus, textarea:focus, .choices button:focus {
 }
 
 .choices button.selected {
-  background: var(--mint);
+  background: linear-gradient(135deg, var(--sage), #f4efd4);
   border-color: var(--line);
   box-shadow: none;
 }
@@ -501,7 +528,7 @@ input:focus, textarea:focus, .choices button:focus {
 
 .share-icon {
   align-items: center;
-  background: var(--lemon);
+  background: linear-gradient(135deg, var(--lemon), var(--sage));
   border: 1px solid var(--line);
   border-radius: var(--radius);
   display: inline-flex;
@@ -588,7 +615,7 @@ input:focus, textarea:focus, .choices button:focus {
 
 @media (max-width: 880px) {
   body {
-    overflow: hidden;
+    overflow-x: hidden;
   }
 
   .deck {
@@ -601,9 +628,8 @@ input:focus, textarea:focus, .choices button:focus {
     border-right: 0;
     gap: 28px;
     margin: 0;
-    min-height: 100svh;
+    min-height: 100dvh;
     padding: 26px 22px 88px;
-    scroll-margin-top: 0;
   }
 
   .hello .slide-panel {
@@ -615,9 +641,12 @@ input:focus, textarea:focus, .choices button:focus {
 
   .hello {
     align-items: start;
-    display: flex;
     flex-direction: column;
     grid-template-columns: 1fr;
+  }
+
+  .hello.active {
+    display: flex;
   }
 
   .hello .slide-copy {

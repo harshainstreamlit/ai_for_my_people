@@ -330,14 +330,9 @@ function App() {
   }, [question]);
 
   const goTo = (index) => {
-    const root = deckRef.current;
-    if (!root) return;
     const nextIndex = Math.max(0, Math.min(index, slides.length - 1));
-    const target = root.children?.[nextIndex];
-    if (!target) return;
-    target.scrollTop = 0;
-    root.scrollTo({ top: target.offsetTop - root.offsetTop, behavior: "smooth" });
     setActive(nextIndex);
+    window.scrollTo({ top: 0, behavior: "smooth" });
     track("slide_navigated", { index: nextIndex, slideId: slides[nextIndex]?.id });
   };
 
@@ -500,7 +495,6 @@ function StorySlide({ slide, index, active, goTo, children }) {
         </div>
       )}
       <div className="slide-copy">
-        <p className="letter-progress">From Harsha · {index + 1} of {slides.length}</p>
         <h1>{slide.title}</h1>
         <p className="lead">{slide.body}</p>
         {slide.paragraphs?.map((paragraph, paragraphIndex) => (
