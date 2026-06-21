@@ -410,7 +410,18 @@ function App() {
 
   return (
     <main>
-      <section className="deck" ref={deckRef} aria-label="AI readiness story">
+      <section
+        className="deck"
+        ref={deckRef}
+        aria-label="AI readiness story"
+        onWheel={(event) => event.preventDefault()}
+        onTouchMove={(event) => event.preventDefault()}
+        onKeyDown={(event) => {
+          if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
+            event.preventDefault();
+          }
+        }}
+      >
         {slides.map((slide, index) => (
           <StorySlide key={slide.id} slide={slide} index={index} active={active} goTo={goTo}>
             {slide.identity && (
