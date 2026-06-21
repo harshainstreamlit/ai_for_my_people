@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+.DS_Store
+*.log
+/harsha.png
+/harsha__biodata.pdf
+Microsoft.Services.Store.winmd
+WhatsApp Installer.exe

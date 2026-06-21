@@ -1,0 +1,25 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#FFFDF8"/>
+  <path d="M0 0H1200V630H0V0Z" fill="url(#grid)"/>
+  <rect x="70" y="72" width="1060" height="486" rx="18" fill="white" stroke="#151515" stroke-width="4"/>
+  <rect x="94" y="96" width="1012" height="438" rx="10" fill="#C9FFE7" stroke="#151515" stroke-width="2"/>
+  <clipPath id="avatarClip">
+    <circle cx="914" cy="312" r="138"/>
+  </clipPath>
+  <circle cx="914" cy="312" r="146" fill="#FFB6A2" stroke="#151515" stroke-width="4"/>
+  <image href="harsha.png" x="776" y="174" width="276" height="276" preserveAspectRatio="xMidYMid slice" clip-path="url(#avatarClip)"/>
+  <circle cx="914" cy="312" r="138" stroke="#151515" stroke-width="4"/>
+  <rect x="122" y="124" width="214" height="42" rx="8" fill="#151515"/>
+  <text x="146" y="153" fill="white" font-family="Arial, sans-serif" font-size="22" font-weight="700">Harsha's note</text>
+  <text x="122" y="250" fill="#151515" font-family="Arial, sans-serif" font-size="82" font-weight="900">AI for my</text>
+  <text x="122" y="342" fill="#151515" font-family="Arial, sans-serif" font-size="82" font-weight="900">inner circle</text>
+  <text x="126" y="410" fill="#384149" font-family="Arial, sans-serif" font-size="34" font-weight="700">A personal AI readiness check for</text>
+  <text x="126" y="454" fill="#384149" font-family="Arial, sans-serif" font-size="34" font-weight="700">people in my circle.</text>
+  <rect x="122" y="484" width="348" height="34" rx="17" fill="#FFF18A" stroke="#151515" stroke-width="2"/>
+  <text x="144" y="508" fill="#151515" font-family="Arial, sans-serif" font-size="18" font-weight="700">Not a course. Personally reviewed.</text>
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#151515" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+</svg>
