@@ -152,6 +152,7 @@ a { color: inherit; text-decoration: none; }
 
 .slide {
   align-items: start;
+  align-content: start;
   background: transparent;
   border: 0;
   border-bottom: 1px solid rgba(45, 37, 29, 0.08);
@@ -176,9 +177,10 @@ a { color: inherit; text-decoration: none; }
 }
 
 .slide-copy {
-  align-self: center;
+  align-self: start;
   max-width: 720px;
   min-width: 0;
+  width: 100%;
 }
 
 .hello {

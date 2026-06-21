@@ -335,6 +335,7 @@ function App() {
     const nextIndex = Math.max(0, Math.min(index, slides.length - 1));
     const target = root.children?.[nextIndex];
     if (!target) return;
+    target.scrollTop = 0;
     root.scrollTo({ top: target.offsetTop - root.offsetTop, behavior: "smooth" });
     setActive(nextIndex);
     track("slide_navigated", { index: nextIndex, slideId: slides[nextIndex]?.id });
