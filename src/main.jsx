@@ -135,6 +135,8 @@ const slides = [
   }
 ];
 
+const slideIndexById = Object.fromEntries(slides.map((slide, index) => [slide.id, index]));
+
 const questions = [
   {
     id: "persona",
@@ -268,6 +270,8 @@ function App() {
   const [answers, setAnswers] = useState({});
   const [question, setQuestion] = useState("");
   const [copied, setCopied] = useState(false);
+  const [modalCopied, setModalCopied] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [visitor] = useState(() => getVisitorId());
   const [sessionId] = useState(() => getSessionId());
   const track = useTracker(visitor.visitorId, sessionId);
@@ -333,6 +337,11 @@ function App() {
     track("slide_navigated", { index, slideId: slides[index]?.id });
   };
 
+  const goToSlide = (slideId) => {
+    const index = slideIndexById[slideId];
+    if (typeof index === "number") goTo(index);
+  };
+
   const updateAnswer = (id, value) => {
     const next = { ...answers, [id]: value };
     setAnswers(next);
@@ -364,11 +373,36 @@ function App() {
     track("whatsapp_cta_clicked", { bucket, completedSurvey, questionLength: question.trim().length });
   };
 
-  const copyShare = async () => {
+  const copyShare = async (eventName = "share_copy_clicked") => {
     await navigator.clipboard.writeText(`${shareText}\n\n${publicSiteUrl}`);
     setCopied(true);
-    track("share_copy_clicked", { publicSiteUrl });
+    track(eventName, { publicSiteUrl });
     setTimeout(() => setCopied(false), 1600);
+  };
+
+  const completeSurvey = () => {
+    track("survey_completed", { answers, bucket, completedSurvey: true });
+    setShowCompletionModal(true);
+    track("completion_modal_viewed", { bucket, publicSiteUrl });
+  };
+
+  const askFromModal = () => {
+    setShowCompletionModal(false);
+    track("completion_modal_whatsapp_clicked", { bucket });
+    goToSlide("ask");
+  };
+
+  const continueFromModal = () => {
+    setShowCompletionModal(false);
+    track("completion_modal_continue_clicked", { bucket });
+    goToSlide("ask");
+  };
+
+  const copyShareFromModal = async () => {
+    await navigator.clipboard.writeText(`${shareText}\n\n${publicSiteUrl}`);
+    setModalCopied(true);
+    track("completion_modal_copy_clicked", { publicSiteUrl, bucket });
+    setTimeout(() => setModalCopied(false), 1600);
   };
 
   return (
@@ -377,17 +411,14 @@ function App() {
         {slides.map((slide, index) => (
           <StorySlide key={slide.id} slide={slide} index={index} active={active} goTo={goTo}>
             {slide.identity && (
-              <IdentityForm identity={identity} setIdentity={setIdentity} onContinue={() => goTo(3)} />
+              <IdentityForm identity={identity} setIdentity={setIdentity} onContinue={() => goTo(index + 1)} />
             )}
             {slide.survey && (
               <Survey
                 answers={answers}
                 updateAnswer={updateAnswer}
                 answerCount={answerCount}
-                onDone={() => {
-                  track("survey_completed", { answers, bucket, completedSurvey: true });
-                  goTo(6);
-                }}
+                onDone={completeSurvey}
               />
             )}
             {slide.final && (
@@ -407,6 +438,14 @@ function App() {
           </StorySlide>
         ))}
       </section>
+      {showCompletionModal && (
+        <CompletionModal
+          copied={modalCopied}
+          onAsk={askFromModal}
+          onCopy={copyShareFromModal}
+          onContinue={continueFromModal}
+        />
+      )}
     </main>
   );
 }
@@ -442,7 +481,6 @@ function queueEvent(event) {
 }
 
 function StorySlide({ slide, index, active, goTo, children }) {
-  const Icon = slide.icon;
   const isActive = active === index;
   const customChildren = React.Children.toArray(children);
   const hasCustomChildren = customChildren.length > 0;
@@ -454,9 +492,7 @@ function StorySlide({ slide, index, active, goTo, children }) {
         </div>
       )}
       <div className="slide-copy">
-        <div className="icon-mark">
-          <Icon size={30} />
-        </div>
+        <p className="letter-progress">From Harsha · {index + 1} of {slides.length}</p>
         <h1>{slide.title}</h1>
         <p className="lead">{slide.body}</p>
         {slide.paragraphs?.map((paragraph, paragraphIndex) => (
@@ -474,6 +510,33 @@ function StorySlide({ slide, index, active, goTo, children }) {
         </div>
       )}
     </article>
+  );
+}
+
+function CompletionModal({ copied, onAsk, onCopy, onContinue }) {
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section className="completion-modal" role="dialog" aria-modal="true" aria-labelledby="completion-title">
+        <div className="modal-avatar" aria-hidden="true">
+          <img src="/harsha.png" alt="" />
+        </div>
+        <p className="letter-progress">A small next step</p>
+        <h2 id="completion-title">I got your answers.</h2>
+        <p>I will personally review this and privately understand where you are with AI.</p>
+        <p>Next, you can ask me one question on WhatsApp, or share this with someone in your circle.</p>
+        <div className="modal-actions">
+          <button className="primary-button" type="button" onClick={onAsk}>
+            Ask Harsha on WhatsApp <Send size={18} />
+          </button>
+          <button className="secondary-button" type="button" onClick={onCopy}>
+            {copied ? "Copied" : "Copy share message"} <Copy size={18} />
+          </button>
+          <button className="quiet-button" type="button" onClick={onContinue}>
+            Continue <ArrowRight size={17} />
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -594,7 +657,7 @@ function ShareBlock({ shareHref, copyShare, copied, track }) {
         <a className="primary-button link-button" href={shareHref} target="_blank" rel="noreferrer" onClick={() => track("share_whatsapp_clicked", { publicSiteUrl })}>
           Share on WhatsApp <Phone size={18} />
         </a>
-        <button className="secondary-button" type="button" onClick={copyShare}>
+        <button className="secondary-button" type="button" onClick={() => copyShare()}>
           {copied ? "Copied" : "Copy share text"} <Copy size={18} />
         </button>
       </div>
