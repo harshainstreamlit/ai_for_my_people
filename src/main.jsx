@@ -31,8 +31,8 @@ const slides = [
   {
     id: "hello",
     icon: HeartHandshake,
-    title: "Dear people in my circle,",
-    body: "This is Harsha. I am doing a small AI readiness check for people I personally know.",
+    title: "If you know me, this is for you.",
+    body: "This is Harsha. I am doing a small AI readiness check for people I personally care about.",
     cta: "Why I am doing this",
     paragraphs: [
       <>I have spent the last many months going deep into AI tools, workflows, automations, prompts, agents, websites, systems and all the strange new ways work is changing.</>,
