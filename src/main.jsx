@@ -380,7 +380,7 @@ function App() {
   };
 
   const completeSurvey = () => {
-    track("survey_completed", { answers, bucket, completedSurvey: true });
+    track("survey_completed", { answers, bucket, identity, completedSurvey: true });
     setShowCompletionModal(true);
     track("completion_modal_viewed", { bucket, publicSiteUrl });
   };
@@ -421,6 +421,8 @@ function App() {
                 answers={answers}
                 updateAnswer={updateAnswer}
                 answerCount={answerCount}
+                identity={identity}
+                setIdentity={setIdentity}
                 onDone={completeSurvey}
               />
             )}
@@ -575,32 +577,62 @@ function IdentityForm({ identity, setIdentity, onContinue }) {
   );
 }
 
-function Survey({ answers, updateAnswer, answerCount, onDone }) {
+function Survey({ answers, updateAnswer, answerCount, identity, setIdentity, onDone }) {
   const [step, setStep] = useState(0);
-  const current = questions[step];
-  const value = answers[current.id] || "";
-  const isLast = step === questions.length - 1;
-  const canMove = Boolean(value);
+  const isContactStep = step === questions.length;
+  const current = isContactStep ? null : questions[step];
+  const value = current ? answers[current.id] || "" : "";
+  const canSubmit = identity.name.trim() && identity.phone.trim();
+  const canMove = isContactStep ? Boolean(canSubmit) : Boolean(value);
 
   const next = () => {
     if (!canMove) return;
-    if (isLast) onDone();
+    if (isContactStep) onDone();
     else setStep((currentStep) => currentStep + 1);
   };
 
   return (
     <div className="survey-card">
       <div className="survey-head">
-        <span>{step + 1} / {questions.length}</span>
-        <div className="mini-progress"><i style={{ width: `${(answerCount / questions.length) * 100}%` }} /></div>
+        <span>{Math.min(step + 1, questions.length + 1)} / {questions.length + 1}</span>
+        <div className="mini-progress"><i style={{ width: `${((answerCount + (isContactStep && canSubmit ? 1 : 0)) / (questions.length + 1)) * 100}%` }} /></div>
       </div>
-      <Question field={current} value={value} onChange={(nextValue) => updateAnswer(current.id, nextValue)} />
+      {isContactStep ? (
+        <SubmitContact identity={identity} setIdentity={setIdentity} />
+      ) : (
+        <Question field={current} value={value} onChange={(nextValue) => updateAnswer(current.id, nextValue)} />
+      )}
       <div className="survey-actions">
         <button className="secondary-button" type="button" disabled={step === 0} onClick={() => setStep((currentStep) => currentStep - 1)}>Back</button>
         <button className="primary-button" type="button" disabled={!canMove} onClick={next}>
-          {isLast ? "Finish check" : "Next"} <ArrowRight size={18} />
+          {isContactStep ? "Submit my answers" : "Next"} <ArrowRight size={18} />
         </button>
       </div>
+    </div>
+  );
+}
+
+function SubmitContact({ identity, setIdentity }) {
+  return (
+    <div className="question submit-contact">
+      <h2>Where should I send your AI suggestion?</h2>
+      <p className="small-note">I will use this only to send what makes sense from your answers. No spam.</p>
+      <label>
+        <span>Your name</span>
+        <input
+          value={identity.name}
+          onChange={(event) => setIdentity((current) => ({ ...current, name: event.target.value }))}
+          placeholder="Your name"
+        />
+      </label>
+      <label>
+        <span>Your WhatsApp number</span>
+        <input
+          value={identity.phone}
+          onChange={(event) => setIdentity((current) => ({ ...current, phone: event.target.value }))}
+          placeholder="Your WhatsApp number"
+        />
+      </label>
     </div>
   );
 }
@@ -632,7 +664,7 @@ function FinalAsk({ question, setQuestion, whatsappHref, openWhatsApp, completed
     <div className="final-card">
       {!completedSurvey && <p className="warning">You can still message me, but the readiness check is not fully complete.</p>}
       <label>
-        <span>Your WhatsApp number</span>
+        <span>Confirm your WhatsApp number</span>
         <input
           value={identity.phone}
           onChange={(event) => setIdentity((current) => ({ ...current, phone: event.target.value }))}
